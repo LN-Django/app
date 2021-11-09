@@ -1,3 +1,13 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 
-# Create your models here.
+from .validators import validate_higher_than_zero
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=64)
+    base_price = models.IntegerField(
+        validators=[validate_higher_than_zero])
+    description = models.CharField(max_length=128)
+    weight = models.FloatField(validators=[validate_higher_than_zero])
+    category = models.CharField(max_length=32)
