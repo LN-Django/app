@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'restapi',
     'rest_framework',
     'drf_yasg',
+    'main_service'
 ]
 
 MIDDLEWARE = [
