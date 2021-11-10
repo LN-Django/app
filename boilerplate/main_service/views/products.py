@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.utils import decimal_as_float, swagger_auto_schema
 
 from ..serializers import ProductSerializer
 from ..models import Product
@@ -28,9 +28,10 @@ class ProductsListView(APIView):
 
     @swagger_auto_schema(responses={
         '200': openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties=product_properties),
-
+            type=openapi.TYPE_ARRAY,
+            items=openapi.Schema(type=openapi.TYPE_OBJECT,
+                                 properties=product_properties),
+            description='Array of product datas'),
     },
         operation_description='Retrieve a list of all products'
     )

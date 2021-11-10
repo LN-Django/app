@@ -16,9 +16,9 @@ docs_url = protocol + "://" + docs_base_url + "/api/v1"
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Boilerplate API",
+        title="App Service API",
         default_version='v0.0.1',
-        description="Sample API to boilerplate future services.",
+        description="Application Service",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="louisandrew3@gmail.com"),
         license=openapi.License(name="BSD License"),
