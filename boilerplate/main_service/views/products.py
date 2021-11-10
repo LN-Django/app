@@ -1,5 +1,3 @@
-from django.core import serializers
-from django.db.models import query
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -7,18 +5,11 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 from drf_yasg import openapi
-from drf_yasg.utils import decimal_as_float, swagger_auto_schema
+from drf_yasg.utils import swagger_auto_schema
 
+from .constants import product_properties
 from ..serializers import ProductSerializer
 from ..models import Product
-
-product_properties = {
-    'name': openapi.Schema(type=openapi.TYPE_STRING, description='Name of the product (max length: 64 characters.)'),
-    'base_price': openapi.Schema(type=openapi.TYPE_NUMBER, description='Base price of the product'),
-    'description': openapi.Schema(type=openapi.TYPE_STRING, description='Product description (max length: 128 characters)'),
-    'weight': openapi.Schema(type=openapi.TYPE_NUMBER, description='Product weight'),
-    'category': openapi.Schema(type=openapi.TYPE_STRING, description='Product category')
-}
 
 
 class ProductsListView(APIView):
