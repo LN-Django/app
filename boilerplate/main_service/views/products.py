@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+from django.core import serializers
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -51,17 +53,17 @@ class ProductsListView(APIView):
     )
     def post(self, request: Request, format=None):
         request_data = JSONParser().parse(request)
-
-        if request_data['base_price'] <= 0:
-            return Response({'message': 'Bad request: base_price property should be higher than 0'}, status=500)
-        if request_data['weight'] <= 0:
-            return Response({'message': 'Bad request: weight property should be higher than 0'}, status=500)
-
         new_product = ProductSerializer(data=request_data)
+
         if not new_product.is_valid():
             return Response({'message': 'Bad request: invalid parameter', 'errors': new_product.errors}, status=500)
 
         product: Product = new_product.save()
-        Product.objects.create(name=product.name, base_price=product.base_price,
-                               description=product.description, weight=product.weight, category=product.category)
-        return Response(new_product.data)
+        try:
+            product = Product.objects.create(name=product.name, base_price=product.base_price,
+                                             description=product.description, weight=product.weight, category=product.category)
+            return_data = new_product.data
+            return_data['id'] = product.id
+            return Response(return_data)
+        except ValidationError as error:
+            return Response({'message': 'Bad request: validation error', 'errors': error})
