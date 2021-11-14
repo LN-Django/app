@@ -37,10 +37,10 @@ class ProductsListView(APIView):
         properties=product_properties,
 
     ), responses={
-        '200': openapi.Schema(
+        '201': openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties=product_properties),
-        '500': openapi.Schema(
+        '400': openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
                 'message': openapi.Schema(type=openapi.TYPE_STRING, description='Error message'),
@@ -56,7 +56,7 @@ class ProductsListView(APIView):
         new_product = ProductSerializer(data=request_data)
 
         if not new_product.is_valid():
-            return Response({'message': 'Bad request: invalid parameter', 'errors': new_product.errors}, status=500)
+            return Response({'message': 'Bad request: invalid parameter', 'errors': new_product.errors}, status=400)
 
         product: Product = new_product.save()
         try:
@@ -64,6 +64,6 @@ class ProductsListView(APIView):
                                              description=product.description, weight=product.weight, category=product.category)
             return_data = new_product.data
             return_data['id'] = product.id
-            return Response(return_data)
+            return Response(return_data, status=201)
         except ValidationError as error:
-            return Response({'message': 'Bad request: validation error', 'errors': error})
+            return Response({'message': 'Bad request: validation error', 'errors': error}, status=400)
