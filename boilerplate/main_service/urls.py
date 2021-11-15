@@ -8,5 +8,6 @@ from .views.product import ProductView
 urlpatterns = [
     url('api/ping_main', SampleView.as_view()),
     url('api/products', ProductsListView.as_view(), name='get_post_products'),
-    path('api/product/<int:product_id>', ProductView.as_view(), name='get_single_product')
+    path('api/product/<int:product_id>',
+         ProductView.as_view(), name='get_single_product')
 ]

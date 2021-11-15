@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.forms.models import model_to_dict
 from rest_framework.test import APIClient
-from django.urls.base import resolve
 from rest_framework import status
 from rest_framework.response import Response
 from django.urls import reverse
@@ -97,8 +97,9 @@ class PostProductTest(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # TODO: Test the error message
-        # self.assertContains(response.data.errors)
+
+        error = response.data['errors']
+        self.assertTrue('base_price', error)
 
     def test_product_invalid_weight_parameter(self):
         """It should return the status code 500 if the weight parameter is not bigger than zero"""
@@ -110,5 +111,30 @@ class PostProductTest(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # TODO: Test the error message
-        # self.assertContains(response.data.errors)
+
+        error = response.data['errors']
+        self.assertTrue('weight', error)
+
+
+class GetSingleProductTest(TestCase):
+    """Test module to test the endpoint to get a single product"""
+
+    def setUp(self) -> None:
+        self.product_one = Product.objects.create(name='Product 1', base_price=12,
+                                                  description='Test desc', weight=5, category='Tech')
+        self.product_two = Product.objects.create(name='Product 2', base_price=15,
+                                                  description='Test desc 2', weight=1, category='Food')
+        return super().setUp()
+
+    def test_get_single_product_valid(self):
+        response: Response = client.get(reverse('get_single_product', kwargs={
+            'product_id': self.product_one.id}))
+
+        self.assertDictEqual(response.data, model_to_dict(self.product_one))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_product_invalid(self):
+        response: Response = client.get(reverse('get_single_product', kwargs={
+            'product_id': 100}))
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
