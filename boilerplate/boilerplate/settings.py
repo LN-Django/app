@@ -122,9 +122,9 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
-                       'pathname=%(pathname)s lineno=%(lineno)s ' +
-                       'funcname=%(funcName)s %(message)s'),
+            'format': ('DJANGO LOGGER %(asctime)s [%(levelname)s]' +
+                       ' \npathname=%(pathname)s lineno=%(lineno)s' +
+                       ' \nfuncname=%(funcName)s %(message)s'),
             'datefmt': '%Y-%m-%d %H:%M:%S'
         },
     },

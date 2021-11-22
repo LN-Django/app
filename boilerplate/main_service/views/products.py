@@ -1,3 +1,4 @@
+import logging
 from django.core.exceptions import ValidationError
 from django.core import serializers
 from rest_framework.parsers import JSONParser
@@ -15,6 +16,7 @@ from ..models import Product
 
 
 class ProductsListView(APIView):
+    logger = logging.getLogger('mainLogger')
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
     serializer_class = ProductSerializer
@@ -56,14 +58,18 @@ class ProductsListView(APIView):
         new_product = ProductSerializer(data=request_data)
 
         if not new_product.is_valid():
+            self.logger.info('Product data serializer error')
             return Response({'message': 'Bad request: invalid parameter', 'errors': new_product.errors}, status=400)
 
-        product: Product = new_product.save()
+        # TODO: Integrate product ORM creation inside the `save` method on serializer
+        product_data: Product = new_product.save()
         try:
-            product = Product.objects.create(name=product.name, base_price=product.base_price,
-                                             description=product.description, weight=product.weight, category=product.category)
+            product: Product = Product.objects.create(name=product_data.name, base_price=product_data.base_price,
+                                                      description=product_data.description, weight=product_data.weight, category=product_data.category)
             return_data = new_product.data
             return_data['id'] = product.id
+
             return Response(return_data, status=201)
         except ValidationError as error:
+            self.logger.info('Validation error while creating product')
             return Response({'message': 'Bad request: validation error', 'errors': error}, status=400)
