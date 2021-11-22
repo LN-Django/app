@@ -52,4 +52,4 @@ class ProductView(APIView):
                 'Critical: Product with id of {:d} returned more than one product'.format(product_id))
             return Response({'message': 'Internal server error. Product with the id {:d} returned more than one product'.format(product_id)}, status=500)
 
-        return Response(queryset.values().first)
+        return Response(queryset.values()[0])
