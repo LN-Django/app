@@ -1,3 +1,4 @@
+import logging
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -13,6 +14,7 @@ from ..models import Product
 
 
 class ProductView(APIView):
+    logger = logging.getLogger('mainLogger')
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
     serializer_class = ProductSerializer
@@ -43,8 +45,11 @@ class ProductView(APIView):
         product_count = queryset.count()
 
         if product_count == 0:
+            self.logger.info('\nProduct {:d} not found'.format(product_id))
             return Response({'message': 'Product not found'}, status=404)
         elif product_count > 1:
-            return Response({'message': 'Internal server error. Product with the id ' + product_id + ' returned more than one product'}, status=500)
+            self.logger.critical(
+                'Critical: Product with id of {:d} returned more than one product'.format(product_id))
+            return Response({'message': 'Internal server error. Product with the id {:d} returned more than one product'.format(product_id)}, status=500)
 
         return Response(queryset.values()[0])
