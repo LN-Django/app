@@ -33,8 +33,8 @@ class ProductsListView(APIView):
         operation_description='Retrieve a list of all products'
     )
     def get(self, request, format=None):
-        queryset = Product.objects.all()
-        return Response(queryset.values())
+        return_data = ProductService.get_all_products()
+        return Response(return_data)
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,

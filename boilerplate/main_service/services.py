@@ -24,3 +24,7 @@ class ProductService:
         response_data = product_data
         response_data['id'] = product.id
         return response_data
+
+    def get_all_products():
+        """Method to get all products from the database"""
+        return Product.objects.all().values()
