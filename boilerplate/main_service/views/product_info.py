@@ -6,6 +6,12 @@ from rest_framework.request import Request
 
 
 class ProductInfoView(APIView):
+    """View class to handle product info HTTP Request. All external API calls should be done here
+        - Calculator (Mehrwertsteuer)
+        - Storage (Storage info -> location, delivery date, etc [WIP!])
+        - External API [WIP!]
+    """
+
     logger = logging.getLogger('mainLogger')
     permission_classes = [permissions.AllowAny]
 
