@@ -10,7 +10,9 @@ from rest_framework.request import Request
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
+
 from .constants import product_properties
+from ..services import ProductService
 from ..serializers import ProductSerializer
 from ..models import Product
 
@@ -31,8 +33,8 @@ class ProductsListView(APIView):
         operation_description='Retrieve a list of all products'
     )
     def get(self, request, format=None):
-        queryset = Product.objects.all()
-        return Response(queryset.values())
+        return_data = ProductService.get_all_products()
+        return Response(return_data)
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -62,13 +64,8 @@ class ProductsListView(APIView):
             return Response({'message': 'Bad request: invalid parameter', 'errors': new_product.errors}, status=400)
 
         # TODO: Integrate product ORM creation inside the `save` method on serializer
-        product_data: Product = new_product.save()
         try:
-            product: Product = Product.objects.create(name=product_data.name, base_price=product_data.base_price,
-                                                      description=product_data.description, weight=product_data.weight, category=product_data.category)
-            return_data = new_product.data
-            return_data['id'] = product.id
-
+            return_data = ProductService.post_single_product(new_product.data)
             return Response(return_data, status=201)
         except ValidationError as error:
             self.logger.info('Validation error while creating product')
