@@ -1,3 +1,4 @@
+from rest_framework.utils.serializer_helpers import ReturnDict
 from .exceptions import NotFoundError, NotUniqueError
 from .models import Product
 
@@ -14,3 +15,12 @@ class ProductService:
             raise NotUniqueError()
 
         return queryset.values()[0]
+
+    def post_single_product(product_data: ReturnDict) -> dict:
+        """Method to post / create a single product"""
+        product: Product = Product.objects.create(name=product_data['name'], base_price=product_data['base_price'],
+                                                  description=product_data['description'], weight=product_data['weight'], category=product_data['category'])
+
+        response_data = product_data
+        response_data['id'] = product.id
+        return response_data
