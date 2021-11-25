@@ -1,3 +1,4 @@
+import dj_database_url
 from os import environ, path
 from pathlib import Path
 from dotenv import load_dotenv
@@ -71,6 +72,11 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+DATABASE_URL = environ.get('DATABASE_URL')
+db_from_env = dj_database_url.config(
+    default=DATABASE_URL, conn_max_age=500, ssl_require=True)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation

@@ -1,5 +1,5 @@
-# boilerplate
-Django + REST boilerplate for future services
+# Application Service
+Central application service for the microservices KBE project.
 
 ## Running the App Locally
 To run the dev server please run the following command.
