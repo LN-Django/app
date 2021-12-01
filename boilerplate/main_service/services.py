@@ -1,8 +1,8 @@
 from rest_framework.utils.serializer_helpers import ReturnDict
 from .exceptions import NotFoundError, NotUniqueError
 from .models import Product
-
-
+import requests
+from django.urls import Resolver404, resolve
 class ProductService:
 
     def get_single_product(product_id: int) -> Product:
@@ -28,3 +28,15 @@ class ProductService:
     def get_all_products():
         """Method to get all products from the database"""
         return Product.objects.all().values()
+
+    def get_product_info(product_id: int):
+        """Method to get info of a product from the database"""
+        product = ProductService.get_single_product(product_id)
+        url = 'https://cryptic-wildwood-57466.herokuapp.com/api/calculator'
+
+        response = requests.post(url, json={'base_price': product['base_price']})
+        response = response.json()
+        print('responseeeeeeeeeeeeeeee',response)
+        product['taxed_price'] = response['taxed_price']
+
+        return product

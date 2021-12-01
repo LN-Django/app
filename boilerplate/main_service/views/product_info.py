@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.request import Request
+from ..services import ProductService
 
 
 class ProductInfoView(APIView):
@@ -17,5 +18,5 @@ class ProductInfoView(APIView):
 
     def get(self, request: Request, product_id):
         self.logger.info('Test log')
-        data = {'product_id': product_id}
+        data = ProductService.get_product_info(product_id)
         return Response(data)
