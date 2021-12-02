@@ -36,7 +36,7 @@ class ProductService:
 
         response = requests.post(url, json={'base_price': product['base_price']})
         response = response.json()
-        print('responseeeeeeeeeeeeeeee',response)
+        
         product['taxed_price'] = response['taxed_price']
 
         return product
