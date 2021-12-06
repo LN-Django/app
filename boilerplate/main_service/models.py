@@ -1,4 +1,3 @@
-from django.core.validators import MinValueValidator
 from django.db import models
 
 from .validators import validate_higher_than_zero
