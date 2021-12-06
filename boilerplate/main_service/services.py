@@ -32,14 +32,7 @@ class ProductService:
 
     def get_product_info(product_id: int):
         """Method to get info of a product from the database"""
-        queryset = Product.objects.filter(id=product_id)
-        product_count = queryset.count()
-        if product_count == 0:
-            raise NotFoundError()
-        elif product_count > 1:
-            raise NotUniqueError()
-
-
+      
         product = ProductService.get_single_product(product_id)
         url = 'https://cryptic-wildwood-57466.herokuapp.com/api/calculator'
 
