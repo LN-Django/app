@@ -10,7 +10,8 @@ class ENDPOINTS:
     calculator_service = 'https://cryptic-wildwood-57466.herokuapp.com/api/calculator'
     storage_service = 'https://peaceful-wave-28166.herokuapp.com/api/storage'
 
-    storage_success_code = 201
+    storage_code = {'post': 201, 'get': 200}
+    calculator_code = {'get': 200}
 
 
 class ProductService:
@@ -46,7 +47,7 @@ class ProductService:
         print(storage_response.status_code)
 
         """Handle if external API request is not successful"""
-        if storage_response.status_code != ENDPOINTS.storage_success_code:
+        if storage_response.status_code != ENDPOINTS.storage_code['post']:
             Product.objects.filter(id=product.id).delete()
             return storage_response.json()
 
@@ -63,6 +64,9 @@ class ProductService:
 
     def get_product_storage_information(product_id: int) -> Response:
         """Method to fetch product storage information"""
+        storage_response = requests.get(
+            ENDPOINTS.storage_service + '/' + str(product_id))
+        return storage_response
 
     def get_all_products():
         """Method to get all products from the database"""
@@ -73,12 +77,25 @@ class ProductService:
 
         product = ProductService.get_single_product(product_id)
 
-        response = requests.post(
-            ENDPOINTS.calculator_service, json={'base_price': product['base_price']})
-        response = response.json()
-        product['taxed_price'] = response['taxed_price']
+        """Fetch storage informations"""
+        storage_response = ProductService.get_product_storage_information(
+            product_id)
+        storage_data = storage_response.json()
 
-        return product
+        if storage_response.status_code != ENDPOINTS.storage_code['get']:
+            return storage_data
+
+        calculator_response = requests.post(
+            ENDPOINTS.calculator_service, json={'base_price': product['base_price']})
+        calculator_data = calculator_response.json()
+
+        if calculator_response.status_code != ENDPOINTS.calculator_code['get']:
+            return calculator_data
+
+        product['taxed_price'] = calculator_data['taxed_price']
+        del storage_data['product_id']
+
+        return {**product, **storage_data}
 
     def get_all_products_with_details():
         """Method to get all products from the database and its additional infos from external services"""
