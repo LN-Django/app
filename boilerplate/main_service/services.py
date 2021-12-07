@@ -1,9 +1,13 @@
+from os import environ
+
 from requests.models import Response
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from .exceptions import NotFoundError, NotUniqueError
 from .models import Product
 import requests
+
+TEST = int(environ.get('TEST', default=0))
 
 
 class ENDPOINTS:
@@ -30,10 +34,14 @@ class ProductService:
     def post_single_product(product_data: ReturnDict, additional_data: dict) -> dict:
         """Method to post / create a single product"""
 
+        if TEST:
+            print(
+                "\n!! Running in test environment. API calls to external API won't be executed")
+
         """Check that the request body/payload is valid for external APIs"""
         storage_info_keys = ['location', 'amount', 'delivery_time']
         for key in storage_info_keys:
-            if additional_data.get(key) is None:
+            if not TEST and additional_data.get(key) is None:
                 raise KeyError(
                     'Attribute `{:s}` not found in request body'.format(key))
 
@@ -41,15 +49,15 @@ class ProductService:
         product: Product = Product.objects.create(name=product_data['name'], base_price=product_data['base_price'],
                                                   description=product_data['description'], weight=product_data['weight'], category=product_data['category'])
 
-        """Create entry on storage service"""
-        storage_response = ProductService.post_product_storage_information(
-            additional_data, product.id)
-        print(storage_response.status_code)
+        if not TEST:
+            """Create entry on storage service"""
+            storage_response = ProductService.post_product_storage_information(
+                additional_data, product.id)
 
-        """Handle if external API request is not successful"""
-        if storage_response.status_code != ENDPOINTS.storage_code['post']:
-            Product.objects.filter(id=product.id).delete()
-            return storage_response.json()
+            """Handle if external API request is not successful"""
+            if storage_response.status_code != ENDPOINTS.storage_code['post']:
+                Product.objects.filter(id=product.id).delete()
+                return storage_response.json()
 
         response_data = {**product_data, **additional_data}
         response_data['id'] = product.id
