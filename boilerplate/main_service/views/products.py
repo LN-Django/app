@@ -10,10 +10,9 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 
-from .constants import product_properties
+from .constants import product_properties, post_product_properties
 from ..services import ProductService
 from ..serializers import ProductSerializer
-from ..models import Product
 
 
 class ProductsListView(APIView):
@@ -37,7 +36,7 @@ class ProductsListView(APIView):
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
-        properties=product_properties,
+        properties=post_product_properties,
 
     ), responses={
         '201': openapi.Schema(
@@ -62,10 +61,18 @@ class ProductsListView(APIView):
             self.logger.info('Product data serializer error')
             return Response({'message': 'Bad request: invalid parameter', 'errors': new_product.errors}, status=400)
 
-        # TODO: Integrate product ORM creation inside the `save` method on serializer
         try:
-            return_data = ProductService.post_single_product(new_product.data)
+            return_data = ProductService.post_single_product(
+                new_product.data, request_data)
+
+            """Handle external API calls not successful"""
+            if not (return_data.get('errors') is None):
+                return Response(return_data, status=400)
+
             return Response(return_data, status=201)
         except ValidationError as error:
             self.logger.info('Validation error while creating product')
             return Response({'message': 'Bad request: validation error', 'errors': error}, status=400)
+        except KeyError as error:
+            self.logger.info('Request body validation error')
+            return Response({'message': 'Bad request: {:s}'.format(str(error))}, status=400)
