@@ -43,11 +43,15 @@ class ProductInfoView(APIView):
     },
         operation_description='Get datas incl. MwSt, storage info, and external API info of a single product with the provided `product_id`'
     )
-
     def get(self, request: Request, product_id):
         try:
-            data = ProductService.get_product_info(product_id)
-            return Response(data)
+            return_data = ProductService.get_product_info(product_id)
+
+            """Handle external API calls not successful"""
+            if not (return_data.get('errors') is None) or not (return_data.get('message') is None):
+                return Response(return_data, status=400)
+
+            return Response(return_data)
         except NotFoundError:
             self.logger.info('\nProduct {:d} not found'.format(product_id))
             return Response({'message': 'Product not found'}, status=404)
@@ -55,4 +59,3 @@ class ProductInfoView(APIView):
             self.logger.critical(
                 'Critical: Product with id of {:d} returned more than one product'.format(product_id))
             return Response({'message': 'Internal server error. Product with the id {:d} returned more than one product'.format(product_id)}, status=500)
-
