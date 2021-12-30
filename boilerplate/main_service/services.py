@@ -19,10 +19,6 @@ class ENDPOINTS:
     calculator_code = {'get': 200}
     externalapi_code = {'get': 200}
 
-    def __init__(self, amount):
-        self.amount = amount
-
-
 class ProductService:
 
     def get_single_product(product_id: int) -> Product:
@@ -113,7 +109,7 @@ class ProductService:
         externalapi_response = requests.get(
             ENDPOINTS.external_api.format(product['taxed_price'])
             )
-            
+
         externalapi_data = externalapi_response.json()
         
         if externalapi_response.status_code != ENDPOINTS.externalapi_code['get']:
