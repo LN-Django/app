@@ -13,10 +13,11 @@ TEST = int(environ.get('TEST', default=0))
 class ENDPOINTS:
     calculator_service = 'https://cryptic-wildwood-57466.herokuapp.com/api/calculator'
     storage_service = 'https://peaceful-wave-28166.herokuapp.com/api/storage'
+    external_api = 'https://v6.exchangerate-api.com/v6/43491df69edca194e005bbf1/pair/EUR/USD/{}'
 
     storage_code = {'post': 201, 'get': 200}
     calculator_code = {'get': 200}
-
+    externalapi_code = {'get': 200}
 
 class ProductService:
 
@@ -93,6 +94,7 @@ class ProductService:
         if storage_response.status_code != ENDPOINTS.storage_code['get']:
             return storage_data
 
+        """Fetch calculator service"""
         calculator_response = requests.post(
             ENDPOINTS.calculator_service, json={'base_price': product['base_price']})
         calculator_data = calculator_response.json()
@@ -102,6 +104,18 @@ class ProductService:
 
         product['taxed_price'] = calculator_data['taxed_price']
         del storage_data['product_id']
+
+        """Fetch external api"""
+        externalapi_response = requests.get(
+            ENDPOINTS.external_api.format(product['taxed_price'])
+            )
+
+        externalapi_data = externalapi_response.json()
+        
+        if externalapi_response.status_code != ENDPOINTS.externalapi_code['get']:
+            return externalapi_data
+
+        product['USD_price'] = round(externalapi_data['conversion_result'], 2)
 
         return {**product, **storage_data}
 
