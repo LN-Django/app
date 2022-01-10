@@ -138,3 +138,29 @@ class GetSingleProductTest(TestCase):
             'product_id': 100}))
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+class GetProductInfoTest(TestCase):
+    """Test module to test the endpoint to get a single product info from storage service, calculator service, and external api"""
+
+    def setUp(self) -> None:
+        self.product_one = Product.objects.create(name='Product 1', base_price=12,
+                                                  description='Test desc', weight=5, category='Tech')
+        self.product_two = Product.objects.create(name='Product 2', base_price=15,
+                                                  description='Test desc 2', weight=1, category='Food')
+        return super().setUp()
+
+    def test_get_single_product_info_valid(self):
+        response: Response = client.get(reverse('get_single_product_info', kwargs={
+            'product_id': self.product_one.id}))
+
+        product1_dict = model_to_dict(self.product_one)
+        product1_dict.update({'USD_price': 16.2, 'amount': 10, 'delivery_time': 7, 'location': 'Paris', 'taxed_price': 14.28})
+        
+        self.assertDictEqual(response.data, product1_dict)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_product_info_invalid(self):
+        response: Response = client.get(reverse('get_single_product_info', kwargs={
+            'product_id': 100}))
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

@@ -21,5 +21,6 @@ post_product_properties = {
 
 product_properties_info = {
     **post_product_properties,
-    'taxed_price': openapi.Schema(type=openapi.TYPE_NUMBER, description='Product price inclusive tax')
+    'taxed_price': openapi.Schema(type=openapi.TYPE_NUMBER, description='Product price inclusive tax'),
+    'USD_price': openapi.Schema(type=openapi.TYPE_NUMBER, description='Product price in USD')
 }
