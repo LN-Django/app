@@ -7,8 +7,6 @@ from rest_framework.response import Response
 from django.urls import reverse
 from rest_framework.utils import json
 
-from .serializers import ProductSerializer
-
 from .models import Product
 
 client = APIClient()
