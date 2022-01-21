@@ -10,7 +10,6 @@ from drf_yasg.utils import swagger_auto_schema
 
 from .constants import product_properties
 from ..exceptions import NotFoundError, NotUniqueError
-from ..models import Product
 from ..serializers import ProductSerializer
 from ..services import ProductService
 
