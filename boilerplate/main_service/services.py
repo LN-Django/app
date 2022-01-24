@@ -119,8 +119,4 @@ class ProductService:
 
         return {**product, **storage_data}
 
-    def get_all_products_with_details():
-        """Method to get all products from the database and its additional infos from external services"""
-
-        # TODO: implement fetching data from external API
-        return ProductService.get_all_products()
+    

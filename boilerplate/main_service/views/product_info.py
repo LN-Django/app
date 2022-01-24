@@ -29,14 +29,14 @@ class ProductInfoView(APIView):
         '404': openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'message': openapi.Schema(type=openapi.TYPE_STRING, description='Error message'),
+                'message': openapi.Schema(type=openapi.TYPE_STRING, description='Error'),
             },
             description='Resource not found'
         ),
         '500': openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'message': openapi.Schema(type=openapi.TYPE_STRING, description='Error message'),
+                'message': openapi.Schema(type=openapi.TYPE_STRING, description='Error'),
             },
             description='Internal server error'
         )

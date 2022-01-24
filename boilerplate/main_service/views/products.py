@@ -45,8 +45,8 @@ class ProductsListView(APIView):
         '400': openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'message': openapi.Schema(type=openapi.TYPE_STRING, description='Error message'),
-                'errors': openapi.Schema(type=openapi.TYPE_OBJECT, description='Django auto-generated errors via serializer')
+                'message': openapi.Schema(type=openapi.TYPE_STRING, description='Bad request'),
+                'errors': openapi.Schema(type=openapi.TYPE_OBJECT, description='Bad request: Invalid parameter(s)')
             },
             description='Invalid parameter'
         )

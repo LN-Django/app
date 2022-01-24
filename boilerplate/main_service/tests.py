@@ -7,8 +7,6 @@ from rest_framework.response import Response
 from django.urls import reverse
 from rest_framework.utils import json
 
-from .serializers import ProductSerializer
-
 from .models import Product
 
 client = APIClient()
@@ -154,7 +152,7 @@ class GetProductInfoTest(TestCase):
             'product_id': self.product_one.id}))
 
         product1_dict = model_to_dict(self.product_one)
-        product1_dict.update({'USD_price': 16.2, 'amount': 10, 'delivery_time': 7, 'location': 'Paris', 'taxed_price': 14.28})
+        product1_dict.update({'USD_price': 16.18, 'amount': 10, 'delivery_time': 7, 'location': 'Paris', 'taxed_price': 14.28})
         
         self.assertDictEqual(response.data, product1_dict)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

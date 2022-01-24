@@ -3,14 +3,12 @@ import logging
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework import permissions
-from rest_framework.response import Response
 from rest_framework.request import Request
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from ..services import ProductService
-from .constants import product_properties
 
 
 class ProductToCSVView(APIView):
